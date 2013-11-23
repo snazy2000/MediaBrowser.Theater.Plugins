@@ -50,17 +50,31 @@ namespace MediaBrowser.Plugins.Channel4
             return false;
         }
 
+        private bool IsWindows8()
+        {
+            var os = Environment.OSVersion;
+            return os.Platform == PlatformID.Win32NT &&
+                   (os.Version.Major > 6 || (os.Version.Major == 6 && os.Version.Minor >= 2));
+        }
+
         private void LaunchProcess()
         {
-            if (checkChannel4Installed())
+            if (IsWindows8())
             {
-                SendKeys.SendWait("^{ESC}");
-                SendKeys.SendWait("4oD");
-                SendKeys.SendWait("{ENTER}");
+                if (checkChannel4Installed())
+                {
+                    SendKeys.SendWait("^{ESC}");
+                    SendKeys.SendWait("4oD");
+                    SendKeys.SendWait("{ENTER}");
+                }
+                else
+                {
+                    throw new FileNotFoundException(@"4oD Metro App is not installed on your system.");
+                }
             }
-            else
+            else 
             {
-                throw new FileNotFoundException(@"4oD Metro App is not installed on your system.");
+                throw new Exception("This App Is Only Compatible With Windows 8 / 8.1");
             }
         }
 

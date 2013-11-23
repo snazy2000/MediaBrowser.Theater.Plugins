@@ -50,17 +50,31 @@ namespace MediaBrowser.Plugins.TVCatchup
             return false;
         }
 
+       private bool IsWindows8()
+        {
+            var os = Environment.OSVersion;
+            return os.Platform == PlatformID.Win32NT &&
+                   (os.Version.Major > 6 || (os.Version.Major == 6 && os.Version.Minor >= 2));
+        }
+
         private void LaunchProcess()
         {
-            if (checkTVCatchupInstalled())
+            if (IsWindows8())
             {
-                SendKeys.SendWait("^{ESC}");
-                SendKeys.SendWait("TVCatchup");
-                SendKeys.SendWait("{ENTER}");
+                if (checkTVCatchupInstalled())
+                {
+                    SendKeys.SendWait("^{ESC}");
+                    SendKeys.SendWait("TVCatchup");
+                    SendKeys.SendWait("{ENTER}");
+                }
+                else
+                {
+                    throw new FileNotFoundException(@"TVCatchup Metro App is not installed on your system.");
+                }
             }
             else
             {
-                throw new FileNotFoundException(@"TVCatchup Metro App is not installed on your system.");
+                throw new Exception("This App Is Only Compatible With Windows 8 / 8.1");
             }
         }
 

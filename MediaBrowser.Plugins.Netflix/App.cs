@@ -51,17 +51,31 @@ namespace MediaBrowser.Plugins.Netflix
             return false;
         }
 
+        private bool IsWindows8()
+        {
+            var os = Environment.OSVersion;
+            return os.Platform == PlatformID.Win32NT &&
+                   (os.Version.Major > 6 || (os.Version.Major == 6 && os.Version.Minor >= 2));
+        }
+
         private void LaunchProcess()
         {
-            if (checkNetflixInstalled())
+            if (IsWindows8())
             {
-                SendKeys.SendWait("^{ESC}");
-                SendKeys.SendWait("netflix");
-                SendKeys.SendWait("{ENTER}");
+                if (checkNetflixInstalled())
+                {
+                    SendKeys.SendWait("^{ESC}");
+                    SendKeys.SendWait("netflix");
+                    SendKeys.SendWait("{ENTER}");
+                }
+                else
+                {
+                    throw new FileNotFoundException(@"Netflix Metro App is not installed on your system.");
+                }
             }
-            else
+            else 
             {
-                throw new FileNotFoundException(@"Netflix Metro App is not installed on your system.");
+                throw new Exception("This App Is Only Compatible With Windows 8 / 8.1");
             }
         }
 
