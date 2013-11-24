@@ -50,16 +50,9 @@ namespace MediaBrowser.Plugins.TVCatchup
             return false;
         }
 
-       private bool IsWindows8()
-        {
-            var os = Environment.OSVersion;
-            return os.Platform == PlatformID.Win32NT &&
-                   (os.Version.Major > 6 || (os.Version.Major == 6 && os.Version.Minor >= 2));
-        }
-
         private void LaunchProcess()
         {
-            if (IsWindows8())
+            try 
             {
                 if (checkTVCatchupInstalled())
                 {
@@ -72,9 +65,9 @@ namespace MediaBrowser.Plugins.TVCatchup
                     throw new FileNotFoundException(@"TVCatchup Metro App is not installed on your system.");
                 }
             }
-            else
+            catch (TypeLoadException)
             {
-                throw new Exception("This App Is Only Compatible With Windows 8 / 8.1");
+                throw new PlatformNotSupportedException("This App Is Only Compatible With Windows 8 / 8.1");
             }
         }
 

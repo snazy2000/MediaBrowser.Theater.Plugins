@@ -51,16 +51,9 @@ namespace MediaBrowser.Plugins.Netflix
             return false;
         }
 
-        private bool IsWindows8()
-        {
-            var os = Environment.OSVersion;
-            return os.Platform == PlatformID.Win32NT &&
-                   (os.Version.Major > 6 || (os.Version.Major == 6 && os.Version.Minor >= 2));
-        }
-
         private void LaunchProcess()
         {
-            if (IsWindows8())
+            try
             {
                 if (checkNetflixInstalled())
                 {
@@ -73,9 +66,9 @@ namespace MediaBrowser.Plugins.Netflix
                     throw new FileNotFoundException(@"Netflix Metro App is not installed on your system.");
                 }
             }
-            else 
+            catch (TypeLoadException)
             {
-                throw new Exception("This App Is Only Compatible With Windows 8 / 8.1");
+                throw new PlatformNotSupportedException("This App Is Only Compatible With Windows 8 / 8.1");
             }
         }
 

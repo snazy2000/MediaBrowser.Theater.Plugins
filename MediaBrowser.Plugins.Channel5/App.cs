@@ -50,16 +50,9 @@ namespace MediaBrowser.Plugins.Channel5
             return false;
         }
 
-        private bool IsWindows8()
-        {
-            var os = Environment.OSVersion;
-            return os.Platform == PlatformID.Win32NT &&
-                   (os.Version.Major > 6 || (os.Version.Major == 6 && os.Version.Minor >= 2));
-        }
-
         private void LaunchProcess()
         {
-            if (IsWindows8())
+            try
             {
                 if (checkChannel5Installed())
                 {
@@ -72,9 +65,9 @@ namespace MediaBrowser.Plugins.Channel5
                     throw new FileNotFoundException(@"Demand 5 Metro App is not installed on your system.");
                 }
             }
-            else 
+            catch (TypeLoadException)
             {
-                throw new Exception("This App Is Only Compatible With Windows 8 / 8.1");
+                throw new PlatformNotSupportedException("This App Is Only Compatible With Windows 8 / 8.1");
             }
         }
 
